@@ -2,15 +2,16 @@ name: dcd_flut_restaurant
 description: This is a submission project for Dicoding class Belajar Fundamental
   Aplikasi Flutter. This project is a simple restaurant app that shows a list of
   restaurants and their details. This project is built using Flutter and Dart.
-publish_to: 'none'
+publish_to: "none"
 version: 0.1.0
 
 environment:
-  sdk: '>=3.0.0 <4.0.0'
+  sdk: ">=3.0.0 <4.0.0"
 
 dependencies:
   flutter:
     sdk: flutter
+  flutter_launcher_icons: ^0.13.1
   flutter_svg: ^2.0.6
   google_fonts: ^5.0.0
 
@@ -18,6 +19,14 @@ dev_dependencies:
   flutter_lints: ^2.0.0
   flutter_test:
     sdk: flutter
+
+flutter_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/logo/logo.png"
+  image_path_ios: "assets/logo/logo.jpg"
+  adaptive_icon_background: "#C21C40"
+  adaptive_icon_foreground: "assets/logo/logo.png"
 
 flutter:
   uses-material-design: true
