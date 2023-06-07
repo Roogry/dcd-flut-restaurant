@@ -1,7 +1,8 @@
 import 'package:dcd_flut_restaurant/data/model/drink.dart';
+import 'package:dcd_flut_restaurant/data/model/food.dart';
 
 class Menus {
-  List<Drink>? foods;
+  List<Food>? foods;
   List<Drink>? drinks;
 
   Menus({
@@ -12,7 +13,7 @@ class Menus {
   factory Menus.fromJson(Map<String, dynamic> json) => Menus(
         foods: json["foods"] == null
             ? []
-            : List<Drink>.from(json["foods"]!.map((x) => Drink.fromJson(x))),
+            : List<Food>.from(json["foods"]!.map((x) => Food.fromJson(x))),
         drinks: json["drinks"] == null
             ? []
             : List<Drink>.from(json["drinks"]!.map((x) => Drink.fromJson(x))),

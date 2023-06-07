@@ -5,7 +5,7 @@ import 'package:dcd_flut_restaurant/data/model/restaurant.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
-class RestaurantDetailPage extends StatelessWidget {
+class RestaurantDetailPage extends StatefulWidget {
   static const routeName = '/restaurant_detail';
   final Restaurant restaurant;
 
@@ -13,6 +13,13 @@ class RestaurantDetailPage extends StatelessWidget {
     Key? key,
     required this.restaurant,
   }) : super(key: key);
+
+  @override
+  State<RestaurantDetailPage> createState() => _RestaurantDetailPageState();
+}
+
+class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
+  bool isExpandedDesc = false;
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +39,7 @@ class RestaurantDetailPage extends StatelessWidget {
                     children: [
                       Expanded(
                         child: Text(
-                          restaurant.name!,
+                          widget.restaurant.name!,
                           style: Theme.of(context).textTheme.titleLarge,
                         ),
                       ),
@@ -54,7 +61,7 @@ class RestaurantDetailPage extends StatelessWidget {
                       const SizedBox(width: 4),
                       Expanded(
                         child: Text(
-                          restaurant.name ?? '-',
+                          widget.restaurant.name ?? '-',
                           style:
                               Theme.of(context).textTheme.bodySmall?.copyWith(
                                     color: secondaryText,
@@ -67,11 +74,14 @@ class RestaurantDetailPage extends StatelessWidget {
                 const SizedBox(height: 16),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Text(
-                    restaurant.description ?? '-',
-                    style: Theme.of(context).textTheme.bodyMedium,
-                    maxLines: 3,
-                    overflow: TextOverflow.ellipsis,
+                  child: InkWell(
+                    onTap: () => setState(() => isExpandedDesc = !isExpandedDesc),
+                    child: Text(
+                      widget.restaurant.description ?? '-',
+                      style: Theme.of(context).textTheme.bodyMedium,
+                      maxLines: isExpandedDesc? 3 : null,
+                      overflow: isExpandedDesc? TextOverflow.ellipsis : TextOverflow.visible,
+                    ),
                   ),
                 ),
                 const SizedBox(height: 24),
@@ -93,7 +103,7 @@ class RestaurantDetailPage extends StatelessWidget {
                   child: Wrap(
                     spacing: 8,
                     runSpacing: 0,
-                    children: restaurant.menus!.foods!
+                    children: widget.restaurant.menus!.foods!
                         .map(
                           (food) => Chip(
                             label: Text(food.name ?? '-'),
@@ -122,7 +132,7 @@ class RestaurantDetailPage extends StatelessWidget {
                   child: Wrap(
                     spacing: 8,
                     runSpacing: 0,
-                    children: restaurant.menus!.drinks!
+                    children: widget.restaurant.menus!.drinks!
                         .map(
                           (drink) => Chip(
                             label: Text(drink.name ?? '-'),
@@ -149,7 +159,7 @@ class RestaurantDetailPage extends StatelessWidget {
       expandedHeight: 300,
       elevation: 0,
       title: Text(
-        restaurant.name?? '-',
+        widget.restaurant.name?? '-',
         style: Theme.of(context).textTheme.titleLarge,
       ),
       shape: const RoundedRectangleBorder(
@@ -188,16 +198,15 @@ class RestaurantDetailPage extends StatelessWidget {
         ),
       ),
       flexibleSpace: FlexibleSpaceBar(
-        // title: Text('Goa', textScaleFactor: 1),
         background: Hero(
-          tag: restaurant.pictureId!,
+          tag: widget.restaurant.pictureId!,
           child: ClipRRect(
             borderRadius: const BorderRadius.only(
               bottomLeft: Radius.circular(15),
               bottomRight: Radius.circular(15),
             ),
             child: Image.network(
-              restaurant.pictureId!,
+              widget.restaurant.pictureId!,
               height: 300,
               width: double.infinity,
               fit: BoxFit.cover,
@@ -227,7 +236,7 @@ class RestaurantDetailPage extends StatelessWidget {
           ),
           const SizedBox(width: 4),
           Text(
-            restaurant.rating.toString(),
+            widget.restaurant.rating.toString(),
             style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                   color: primaryColor,
                 ),

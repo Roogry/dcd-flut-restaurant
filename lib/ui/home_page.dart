@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:dcd_flut_restaurant/common/styles.dart';
 import 'package:dcd_flut_restaurant/data/model/restaurant.dart';
 import 'package:dcd_flut_restaurant/data/repository/local_json.dart';
@@ -69,49 +67,53 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
             const SizedBox(height: 16),
-            TextField(
-              controller: _searchController,
-              style: GoogleFonts.inter(
-                fontSize: 16,
-                fontWeight: FontWeight.w300,
-                color: blackText,
-              ),
-              decoration: InputDecoration(
-                hintText: 'Cari restoran...',
-                hintStyle: const TextStyle(color: placeholderText),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10.0),
-                  borderSide: BorderSide.none,
-                ),
-                filled: true,
-                fillColor: primaryBackground,
-                prefixIcon: SvgPicture.asset('assets/icons/search.svg'),
-                prefixIconConstraints: const BoxConstraints(
-                  minWidth: 46,
-                  minHeight: 24,
-                ),
-              ),
-              onChanged: (value) {
-                if (value == '') {
-                  setState(() {
-                    queriedRestaurant = restaurants;
-                  });
-                } else {
-                  setState(() {
-                    queriedRestaurant = restaurants
-                        .where((restaurant) => restaurant.name!
-                            .toLowerCase()
-                            .contains(value.toLowerCase()))
-                        .toList();
-                  });
-                }
-              },
-            ),
+            _searchField(),
             const SizedBox(height: 24),
             _buildList(context)
           ],
         ),
       )),
+    );
+  }
+
+  TextField _searchField() {
+    return TextField(
+      controller: _searchController,
+      style: GoogleFonts.inter(
+        fontSize: 16,
+        fontWeight: FontWeight.w300,
+        color: blackText,
+      ),
+      decoration: InputDecoration(
+        hintText: 'Cari restoran...',
+        hintStyle: const TextStyle(color: placeholderText),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10.0),
+          borderSide: BorderSide.none,
+        ),
+        filled: true,
+        fillColor: primaryBackground,
+        prefixIcon: SvgPicture.asset('assets/icons/search.svg'),
+        prefixIconConstraints: const BoxConstraints(
+          minWidth: 46,
+          minHeight: 24,
+        ),
+      ),
+      onChanged: (value) {
+        if (value == '') {
+          setState(() {
+            queriedRestaurant = restaurants;
+          });
+        } else {
+          setState(() {
+            queriedRestaurant = restaurants
+                .where((restaurant) => restaurant.name!
+                    .toLowerCase()
+                    .contains(value.toLowerCase()))
+                .toList();
+          });
+        }
+      },
     );
   }
 

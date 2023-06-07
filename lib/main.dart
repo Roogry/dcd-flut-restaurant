@@ -37,9 +37,6 @@ class MainApp extends StatelessWidget {
               restaurant:
                   ModalRoute.of(context)?.settings.arguments as Restaurant,
             ),
-        // ArticleWebView.routeName: (context) => ArticleWebView(
-        //       url: ModalRoute.of(context)?.settings.arguments as String,
-        //     ),
       },
     );
   }
