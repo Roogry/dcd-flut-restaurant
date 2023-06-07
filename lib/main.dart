@@ -2,6 +2,7 @@ import 'package:dcd_flut_restaurant/common/styles.dart';
 import 'package:dcd_flut_restaurant/data/model/restaurant.dart';
 import 'package:dcd_flut_restaurant/ui/home_page.dart';
 import 'package:dcd_flut_restaurant/ui/restaurant_detail_page.dart';
+import 'package:dcd_flut_restaurant/ui/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -27,8 +28,9 @@ class MainApp extends StatelessWidget {
         scaffoldBackgroundColor: Colors.white,
         textTheme: myTextTheme,
       ),
-      initialRoute: HomePage.routeName,
+      initialRoute: SplashScreen.routeName,
       routes: {
+        SplashScreen.routeName: (context) => const SplashScreen(),
         HomePage.routeName: (context) => const HomePage(),
         RestaurantDetailPage.routeName: (context) => RestaurantDetailPage(
               restaurant:
