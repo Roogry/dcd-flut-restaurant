@@ -146,6 +146,28 @@ class _HomePageState extends State<HomePage> {
       );
     }
 
+    if (queriedRestaurant.isEmpty) {
+      return Center(
+        child: Column(
+          children: [
+            const SizedBox(height: 40),
+            const Icon(
+              Icons.restaurant_menu_rounded,
+              size: 40,
+              color: primaryColor,
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'Restauran tidak ditemukan',
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: secondaryText,
+                  ),
+            ),
+          ],
+        ),
+      );
+    }
+
     return GridView.count(
       crossAxisCount: 2,
       childAspectRatio: .85,
