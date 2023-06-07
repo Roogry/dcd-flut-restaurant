@@ -20,6 +20,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   List<Restaurant> restaurants = [];
   List<Restaurant> queriedRestaurant = [];
+  final TextEditingController _searchController = TextEditingController();
 
   @override
   void initState() {
@@ -35,41 +36,83 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        body: SafeArea(
-      child: ListView(
-        padding: const EdgeInsets.fromLTRB(24, 24, 24, 32),
-        children: [
-          RichText(
-            text: TextSpan(
-              text: 'Halo, ',
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
+      child: Scaffold(
+          body: SafeArea(
+        child: ListView(
+          padding: const EdgeInsets.fromLTRB(24, 24, 24, 32),
+          children: [
+            RichText(
+              text: TextSpan(
+                text: 'Halo, ',
+                style: GoogleFonts.inter(
+                  fontSize: 20,
+                  color: blackText,
+                ),
+                children: [
+                  TextSpan(
+                    text: 'Sobatku',
+                    style: GoogleFonts.inter(
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Rekomendasi restoran untuk kamu',
               style: GoogleFonts.inter(
-                fontSize: 20,
+                fontSize: 14,
+                color: secondaryText,
+              ),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: _searchController,
+              style: GoogleFonts.inter(
+                fontSize: 16,
+                fontWeight: FontWeight.w300,
                 color: blackText,
               ),
-              children: [
-                TextSpan(
-                  text: 'Sobatku',
-                  style: GoogleFonts.inter(
-                    fontWeight: FontWeight.w600,
-                  ),
+              decoration: InputDecoration(
+                hintText: 'Cari restoran...',
+                hintStyle: const TextStyle(color: placeholderText),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                  borderSide: BorderSide.none,
                 ),
-              ],
+                filled: true,
+                fillColor: primaryBackground,
+                prefixIcon: SvgPicture.asset('assets/icons/search.svg'),
+                prefixIconConstraints: const BoxConstraints(
+                  minWidth: 46,
+                  minHeight: 24,
+                ),
+              ),
+              onChanged: (value) {
+                if (value == '') {
+                  setState(() {
+                    queriedRestaurant = restaurants;
+                  });
+                } else {
+                  setState(() {
+                    queriedRestaurant = restaurants
+                        .where((restaurant) => restaurant.name!
+                            .toLowerCase()
+                            .contains(value.toLowerCase()))
+                        .toList();
+                  });
+                }
+              },
             ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Rekomendasi restoran untuk kamu',
-            style: GoogleFonts.inter(
-              fontSize: 14,
-              color: secondaryText,
-            ),
-          ),
-          const SizedBox(height: 24),
-          _buildList(context)
-        ],
-      ),
-    ));
+            const SizedBox(height: 24),
+            _buildList(context)
+          ],
+        ),
+      )),
+    );
   }
 
   Widget _buildList(BuildContext context) {

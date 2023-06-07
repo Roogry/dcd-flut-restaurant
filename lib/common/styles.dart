@@ -7,7 +7,7 @@ const primaryLightColor = Color(0xFFFFDBE3);
 
 const blackText = Color(0xFF212843);
 const secondaryText = Color(0xFF858792);
-const placeholderText = Color(0xFFD4D4D4);
+const placeholderText = Color(0xFFB6B6B6);
 
 const primaryBackground = Color(0xFFF8F5F6);
 const greyBackground = Color(0xFFF1F1F1);
