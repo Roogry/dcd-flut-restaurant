@@ -1,6 +1,7 @@
 import 'package:dcd_flut_restaurant/common/styles.dart';
 import 'package:dcd_flut_restaurant/ui/home_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -13,7 +14,6 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-
   @override
   void initState() {
     super.initState();
@@ -31,9 +31,13 @@ class _SplashScreenState extends State<SplashScreen> {
       body: SafeArea(
         child: Center(
           child: Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
-              Image.asset('assets/logo.png', height: 70, fit: BoxFit.fitHeight,),
-
+              SvgPicture.asset(
+                'assets/logo/logo.svg',
+                height: 70,
+                fit: BoxFit.fitHeight,
+              ),
               const SizedBox(height: 24),
               Text(
                 'Restoeev',
