@@ -26,6 +26,12 @@ class _HomePageState extends State<HomePage> {
     _getRestaurants();
   }
 
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
   _getRestaurants() async {
     restaurants = await LocalJson.getData();
     queriedRestaurant = restaurants;
