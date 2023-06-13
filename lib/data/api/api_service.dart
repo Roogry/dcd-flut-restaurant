@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:dcd_flut_restaurant/data/model/review.dart';
 import 'package:http/http.dart' as http;
 import 'package:dcd_flut_restaurant/data/model/restaurant.dart';
 
@@ -32,6 +33,22 @@ class ApiService {
       return RestaurantSearchResponse.fromJson(json.decode(response.body));
     } else {
       throw Exception('Failed to search restaurant');
+    }
+  }
+
+  Future<ReviewResponse> submitReview(Map<String, dynamic> data) async {
+    final response = await http.post(
+      Uri.parse('$_baseUrl/review'),
+      headers: <String, String> {
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode(data),
+    );
+
+    if (response.statusCode == 201) {
+      return ReviewResponse.fromJson(json.decode(response.body));
+    } else {
+      throw Exception('Failed to submit review');
     }
   }
 }

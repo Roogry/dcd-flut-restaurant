@@ -3,7 +3,9 @@ import 'dart:ui';
 import 'package:dcd_flut_restaurant/common/state_enum.dart';
 import 'package:dcd_flut_restaurant/common/styles.dart';
 import 'package:dcd_flut_restaurant/data/model/restaurant.dart';
+import 'package:dcd_flut_restaurant/data/model/review.dart';
 import 'package:dcd_flut_restaurant/provider/restaurant_detail_provider.dart';
+import 'package:dcd_flut_restaurant/ui/write_review_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
@@ -24,11 +26,13 @@ class RestaurantDetailPage extends StatefulWidget {
 class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
   @override
   void initState() {
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) async {
+        Provider.of<RestaurantDetailProvider>(context, listen: false)
+              .fetchRestaurantDetail(widget.id);
+      },
+    );
     super.initState();
-    Future.microtask(() {
-      Provider.of<RestaurantDetailProvider>(context, listen: false)
-          .fetchRestaurantDetail(widget.id);
-    });
   }
 
   @override
@@ -65,128 +69,224 @@ class _DetailContentState extends State<DetailContent> {
 
   @override
   Widget build(BuildContext context) {
-    return CustomScrollView(
-      slivers: [
-        _buildAppBar(context),
-        SliverToBoxAdapter(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 24),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: Text(
-                        widget.restaurant.name!,
-                        style: Theme.of(context).textTheme.titleLarge,
+    return RefreshIndicator(
+      onRefresh: () => Provider.of<RestaurantDetailProvider>(context, listen: false)
+              .fetchRestaurantDetail(widget.restaurant.id!),
+      child: CustomScrollView(
+        slivers: [
+          _buildAppBar(context),
+          SliverToBoxAdapter(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 24),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Text(
+                          widget.restaurant.name!,
+                          style: Theme.of(context).textTheme.titleLarge,
+                        ),
                       ),
-                    ),
-                    const SizedBox(width: 8),
-                    _ratingContainer(context),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 6),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Row(
-                  children: [
-                    SvgPicture.asset(
-                      'assets/icons/pin_fill.svg',
-                      height: 10,
-                      width: 10,
-                    ),
-                    const SizedBox(width: 4),
-                    Expanded(
-                      child: Text(
-                        widget.restaurant.name ?? '-',
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: secondaryText,
-                            ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 16),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: InkWell(
-                  onTap: () => setState(() => isExpandedDesc = !isExpandedDesc),
-                  child: Text(
-                    widget.restaurant.description ?? '-',
-                    style: Theme.of(context).textTheme.bodyMedium,
-                    maxLines: isExpandedDesc ? null : 3,
-                    overflow: isExpandedDesc
-                        ? TextOverflow.visible
-                        : TextOverflow.ellipsis,
+                      const SizedBox(width: 8),
+                      _ratingContainer(context),
+                    ],
                   ),
                 ),
-              ),
-              const SizedBox(height: 24),
-              const Divider(
-                color: primaryBackground,
-                thickness: 16,
-              ),
-              const SizedBox(height: 24),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Text(
-                  'Makanan',
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Wrap(
-                  spacing: 8,
-                  runSpacing: 0,
-                  children: widget.restaurant.menus!.foods!
-                      .map(
-                        (food) => Chip(
-                          label: Text(food.name ?? '-'),
-                          backgroundColor: primaryBackground,
+                const SizedBox(height: 6),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Row(
+                    children: [
+                      SvgPicture.asset(
+                        'assets/icons/pin_fill.svg',
+                        height: 10,
+                        width: 10,
+                      ),
+                      const SizedBox(width: 4),
+                      Expanded(
+                        child: Text(
+                          widget.restaurant.name ?? '-',
+                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                color: secondaryText,
+                              ),
                         ),
-                      )
-                      .toList(),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              const SizedBox(height: 24),
-              const Divider(
-                color: primaryBackground,
-                thickness: 16,
-              ),
-              const SizedBox(height: 24),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Text(
-                  'Minuman',
-                  style: Theme.of(context).textTheme.titleMedium,
+                const SizedBox(height: 16),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: InkWell(
+                    onTap: () => setState(() => isExpandedDesc = !isExpandedDesc),
+                    child: Text(
+                      widget.restaurant.description ?? '-',
+                      style: Theme.of(context).textTheme.bodyMedium,
+                      maxLines: isExpandedDesc ? null : 3,
+                      overflow: isExpandedDesc
+                          ? TextOverflow.visible
+                          : TextOverflow.ellipsis,
+                    ),
+                  ),
                 ),
-              ),
-              const SizedBox(height: 8),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Wrap(
-                  spacing: 8,
-                  runSpacing: 0,
-                  children: widget.restaurant.menus!.drinks!
-                      .map(
-                        (drink) => Chip(
-                          label: Text(drink.name ?? '-'),
-                          backgroundColor: primaryBackground,
-                        ),
-                      )
-                      .toList(),
+                const SizedBox(height: 24),
+                const Divider(
+                  color: primaryBackground,
+                  thickness: 16,
                 ),
-              ),
-              SizedBox(height: MediaQuery.of(context).padding.bottom + 32),
-            ],
+                const SizedBox(height: 24),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Text(
+                    'Makanan',
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Wrap(
+                    spacing: 8,
+                    runSpacing: 0,
+                    children: widget.restaurant.menus!.foods!
+                        .map(
+                          (food) => Chip(
+                            label: Text(food.name ?? '-'),
+                            backgroundColor: primaryBackground,
+                          ),
+                        )
+                        .toList(),
+                  ),
+                ),
+                const SizedBox(height: 24),
+                const Divider(
+                  color: primaryBackground,
+                  thickness: 16,
+                ),
+                const SizedBox(height: 24),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Text(
+                    'Minuman',
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Wrap(
+                    spacing: 8,
+                    runSpacing: 0,
+                    children: widget.restaurant.menus!.drinks!
+                        .map(
+                          (drink) => Chip(
+                            label: Text(drink.name ?? '-'),
+                            backgroundColor: primaryBackground,
+                          ),
+                        )
+                        .toList(),
+                  ),
+                ),
+                const SizedBox(height: 24),
+                const Divider(
+                  color: primaryBackground,
+                  thickness: 16,
+                ),
+                const SizedBox(height: 24),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Text(
+                    'Review',
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                ),
+                const SizedBox(height: 24),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  width: double.infinity,
+                  child: OutlinedButton(
+                    onPressed: () {
+                      Navigator.pushNamed(
+                        context,
+                        WriteReviewPage.routeName,
+                        arguments: widget.restaurant,
+                      );
+                    },
+                    style: OutlinedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 20),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    child: Text(
+                      'Tulis Review',
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                ListView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  itemCount: widget.restaurant.customerReviews!.length,
+                  itemBuilder: (context, index) {
+                    return _reviewCard(
+                      review: widget.restaurant.customerReviews![index],
+                      isFirst: index == 0,
+                    );
+                  },
+                ),
+                SizedBox(height: MediaQuery.of(context).padding.bottom + 32),
+              ],
+            ),
           ),
+        ],
+      ),
+    );
+  }
+
+  Widget _reviewCard({required CustomerReview review, bool isFirst = false}) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(height: 16),
+        Visibility(
+          visible: !isFirst,
+          child: Divider(
+            color: secondaryText.withOpacity(.3),
+            thickness: .5,
+          ),
+        ),
+        Visibility(
+          visible: !isFirst,
+          child: const SizedBox(height: 16),
+        ),
+        Text(
+          review.name ?? '-',
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: Theme.of(context).textTheme.labelLarge,
+        ),
+        const SizedBox(height: 2),
+        Text(
+          review.date ?? '-',
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: secondaryText,
+              ),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          review.review ?? '-',
+          maxLines: 3,
+          overflow: TextOverflow.ellipsis,
+          style: Theme.of(context).textTheme.bodyMedium,
         ),
       ],
     );

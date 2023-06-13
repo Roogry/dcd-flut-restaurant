@@ -1,10 +1,13 @@
 import 'package:dcd_flut_restaurant/common/styles.dart';
 import 'package:dcd_flut_restaurant/data/api/api_service.dart';
+import 'package:dcd_flut_restaurant/data/model/restaurant.dart';
 import 'package:dcd_flut_restaurant/provider/restaurant_detail_provider.dart';
 import 'package:dcd_flut_restaurant/provider/restaurant_list_provider.dart';
+import 'package:dcd_flut_restaurant/provider/review_add_provider.dart';
 import 'package:dcd_flut_restaurant/ui/home_page.dart';
 import 'package:dcd_flut_restaurant/ui/restaurant_detail_page.dart';
 import 'package:dcd_flut_restaurant/ui/splash_screen.dart';
+import 'package:dcd_flut_restaurant/ui/write_review_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -25,6 +28,9 @@ class MainApp extends StatelessWidget {
         ),
         ChangeNotifierProvider(
           create: (_) => RestaurantDetailProvider(apiService: ApiService()),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => ReviewAddProvicer(apiService: ApiService()),
         ),
       ],
       child: MaterialApp(
@@ -47,6 +53,11 @@ class MainApp extends StatelessWidget {
           HomePage.routeName: (context) => const HomePage(),
           RestaurantDetailPage.routeName: (context) => RestaurantDetailPage(
                 id: ModalRoute.of(context)?.settings.arguments as String? ?? '',
+              ),
+          WriteReviewPage.routeName: (context) => WriteReviewPage(
+                restaurant:
+                    ModalRoute.of(context)?.settings.arguments as Restaurant? ??
+                        Restaurant(),
               ),
         },
       ),
