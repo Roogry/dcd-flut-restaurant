@@ -32,39 +32,45 @@ class _HomePageState extends State<HomePage> {
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
           body: SafeArea(
-        child: ListView(
-          padding: const EdgeInsets.fromLTRB(24, 24, 24, 32),
-          children: [
-            RichText(
-              text: TextSpan(
-                text: 'Halo, ',
-                style: GoogleFonts.inter(
-                  fontSize: 20,
-                  color: blackText,
-                ),
-                children: [
-                  TextSpan(
-                    text: 'Sobatku',
-                    style: GoogleFonts.inter(
-                      fontWeight: FontWeight.w600,
-                    ),
+        child: RefreshIndicator(
+          onRefresh: () {
+            return Provider.of<RestaurantListProvider>(context, listen: false)
+                .fetchAllRestaurant();
+          },
+          child: ListView(
+            padding: const EdgeInsets.fromLTRB(24, 24, 24, 32),
+            children: [
+              RichText(
+                text: TextSpan(
+                  text: 'Halo, ',
+                  style: GoogleFonts.inter(
+                    fontSize: 20,
+                    color: blackText,
                   ),
-                ],
+                  children: [
+                    TextSpan(
+                      text: 'Sobatku',
+                      style: GoogleFonts.inter(
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Rekomendasi restoran untuk kamu',
-              style: GoogleFonts.inter(
-                fontSize: 14,
-                color: secondaryText,
+              const SizedBox(height: 8),
+              Text(
+                'Rekomendasi restoran untuk kamu',
+                style: GoogleFonts.inter(
+                  fontSize: 14,
+                  color: secondaryText,
+                ),
               ),
-            ),
-            const SizedBox(height: 16),
-            _searchField(),
-            const SizedBox(height: 24),
-            _buildList(context)
-          ],
+              const SizedBox(height: 16),
+              _searchField(),
+              const SizedBox(height: 24),
+              _buildList(context)
+            ],
+          ),
         ),
       )),
     );
