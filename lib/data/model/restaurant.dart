@@ -1,7 +1,3 @@
-// To parse this JSON data, do
-//
-//     final restaurantResponse = restaurantResponseFromJson(jsonString);
-
 import 'dart:convert';
 
 import 'package:dcd_flut_restaurant/data/model/category.dart';

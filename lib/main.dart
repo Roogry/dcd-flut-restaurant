@@ -1,6 +1,5 @@
 import 'package:dcd_flut_restaurant/common/styles.dart';
 import 'package:dcd_flut_restaurant/data/api/api_service.dart';
-import 'package:dcd_flut_restaurant/data/model/restaurant.dart';
 import 'package:dcd_flut_restaurant/provider/restaurant_detail_provider.dart';
 import 'package:dcd_flut_restaurant/provider/restaurant_list_provider.dart';
 import 'package:dcd_flut_restaurant/ui/home_page.dart';
