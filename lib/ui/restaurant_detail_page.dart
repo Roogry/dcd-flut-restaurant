@@ -1,17 +1,20 @@
 import 'dart:ui';
 
+import 'package:dcd_flut_restaurant/common/state_enum.dart';
 import 'package:dcd_flut_restaurant/common/styles.dart';
 import 'package:dcd_flut_restaurant/data/model/restaurant.dart';
+import 'package:dcd_flut_restaurant/provider/restaurant_detail_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:provider/provider.dart';
 
 class RestaurantDetailPage extends StatefulWidget {
-  static const routeName = '/restaurant_detail';
-  final Restaurant restaurant;
+  static const routeName = '/detail';
+  final String id;
 
   RestaurantDetailPage({
     Key? key,
-    required this.restaurant,
+    required this.id,
   }) : super(key: key);
 
   @override
@@ -19,139 +22,177 @@ class RestaurantDetailPage extends StatefulWidget {
 }
 
 class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
-  bool isExpandedDesc = false;
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(() {
+      Provider.of<RestaurantDetailProvider>(context, listen: false)
+          .fetchRestaurantDetail(widget.id);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: CustomScrollView(
-        slivers: [
-          _buildAppBar(context),
-          SliverToBoxAdapter(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: 24),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Expanded(
-                        child: Text(
-                          widget.restaurant.name!,
-                          style: Theme.of(context).textTheme.titleLarge,
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      _ratingContainer(context),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 6),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Row(
-                    children: [
-                      SvgPicture.asset(
-                        'assets/icons/pin_fill.svg',
-                        height: 10,
-                        width: 10,
-                      ),
-                      const SizedBox(width: 4),
-                      Expanded(
-                        child: Text(
-                          widget.restaurant.name ?? '-',
-                          style:
-                              Theme.of(context).textTheme.bodySmall?.copyWith(
-                                    color: secondaryText,
-                                  ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: InkWell(
-                    onTap: () => setState(() => isExpandedDesc = !isExpandedDesc),
-                    child: Text(
-                      widget.restaurant.description ?? '-',
-                      style: Theme.of(context).textTheme.bodyMedium,
-                      maxLines: isExpandedDesc? 3 : null,
-                      overflow: isExpandedDesc? TextOverflow.ellipsis : TextOverflow.visible,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 24),
-                const Divider(
-                  color: primaryBackground,
-                  thickness: 16,
-                ),
-                const SizedBox(height: 24),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Text(
-                    'Makanan',
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Wrap(
-                    spacing: 8,
-                    runSpacing: 0,
-                    children: widget.restaurant.menus!.foods!
-                        .map(
-                          (food) => Chip(
-                            label: Text(food.name ?? '-'),
-                            backgroundColor: primaryBackground,
-                          ),
-                        )
-                        .toList(),
-                  ),
-                ),
-                const SizedBox(height: 24),
-                const Divider(
-                  color: primaryBackground,
-                  thickness: 16,
-                ),
-                const SizedBox(height: 24),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Text(
-                    'Minuman',
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Wrap(
-                    spacing: 8,
-                    runSpacing: 0,
-                    children: widget.restaurant.menus!.drinks!
-                        .map(
-                          (drink) => Chip(
-                            label: Text(drink.name ?? '-'),
-                            backgroundColor: primaryBackground,
-                          ),
-                        )
-                        .toList(),
-                  ),
-                ),
-                SizedBox(height: MediaQuery.of(context).padding.bottom + 32),
-              ],
-            ),
-          ),
-        ],
+      body: Consumer<RestaurantDetailProvider>(
+        builder: (context, state, _) {
+          if (state.state == ResultState.loading) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (state.state == ResultState.hasData) {
+            return DetailContent(
+              restaurant: state.result.restaurant!,
+            );
+          } else {
+            return Text(state.message);
+          }
+        },
       ),
     );
   }
+}
 
-  SliverAppBar _buildAppBar(BuildContext context) {
+class DetailContent extends StatefulWidget {
+  Restaurant restaurant;
+
+  DetailContent({super.key, required this.restaurant});
+
+  @override
+  State<DetailContent> createState() => _DetailContentState();
+}
+
+class _DetailContentState extends State<DetailContent> {
+  bool isExpandedDesc = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return CustomScrollView(
+      slivers: [
+        _buildAppBar(context),
+        SliverToBoxAdapter(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 24),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        widget.restaurant.name!,
+                        style: Theme.of(context).textTheme.titleLarge,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    _ratingContainer(context),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 6),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Row(
+                  children: [
+                    SvgPicture.asset(
+                      'assets/icons/pin_fill.svg',
+                      height: 10,
+                      width: 10,
+                    ),
+                    const SizedBox(width: 4),
+                    Expanded(
+                      child: Text(
+                        widget.restaurant.name ?? '-',
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              color: secondaryText,
+                            ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 16),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: InkWell(
+                  onTap: () => setState(() => isExpandedDesc = !isExpandedDesc),
+                  child: Text(
+                    widget.restaurant.description ?? '-',
+                    style: Theme.of(context).textTheme.bodyMedium,
+                    maxLines: isExpandedDesc ? null : 3,
+                    overflow: isExpandedDesc
+                        ? TextOverflow.visible
+                        : TextOverflow.ellipsis,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 24),
+              const Divider(
+                color: primaryBackground,
+                thickness: 16,
+              ),
+              const SizedBox(height: 24),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Text(
+                  'Makanan',
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Wrap(
+                  spacing: 8,
+                  runSpacing: 0,
+                  children: widget.restaurant.menus!.foods!
+                      .map(
+                        (food) => Chip(
+                          label: Text(food.name ?? '-'),
+                          backgroundColor: primaryBackground,
+                        ),
+                      )
+                      .toList(),
+                ),
+              ),
+              const SizedBox(height: 24),
+              const Divider(
+                color: primaryBackground,
+                thickness: 16,
+              ),
+              const SizedBox(height: 24),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Text(
+                  'Minuman',
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Wrap(
+                  spacing: 8,
+                  runSpacing: 0,
+                  children: widget.restaurant.menus!.drinks!
+                      .map(
+                        (drink) => Chip(
+                          label: Text(drink.name ?? '-'),
+                          backgroundColor: primaryBackground,
+                        ),
+                      )
+                      .toList(),
+                ),
+              ),
+              SizedBox(height: MediaQuery.of(context).padding.bottom + 32),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildAppBar(BuildContext context) {
     return SliverAppBar(
       pinned: true,
       backgroundColor: Colors.white,
@@ -159,7 +200,7 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
       expandedHeight: 300,
       elevation: 0,
       title: Text(
-        widget.restaurant.name?? '-',
+        widget.restaurant.name ?? '-',
         style: Theme.of(context).textTheme.titleLarge,
       ),
       shape: const RoundedRectangleBorder(
@@ -206,7 +247,7 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
               bottomRight: Radius.circular(15),
             ),
             child: Image.network(
-              widget.restaurant.pictureId!,
+              'https://restaurant-api.dicoding.dev/images/medium/${widget.restaurant.pictureId}',
               height: 300,
               width: double.infinity,
               fit: BoxFit.cover,
@@ -217,7 +258,7 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
     );
   }
 
-  Container _ratingContainer(BuildContext context) {
+  Widget _ratingContainer(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(
         vertical: 4,

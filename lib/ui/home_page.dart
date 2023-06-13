@@ -1,10 +1,12 @@
+import 'package:dcd_flut_restaurant/common/state_enum.dart';
 import 'package:dcd_flut_restaurant/common/styles.dart';
 import 'package:dcd_flut_restaurant/data/model/restaurant.dart';
-import 'package:dcd_flut_restaurant/data/repository/local_json.dart';
+import 'package:dcd_flut_restaurant/provider/restaurant_list_provider.dart';
 import 'package:dcd_flut_restaurant/ui/restaurant_detail_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
   static const routeName = '/home_page';
@@ -16,26 +18,12 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  List<Restaurant> restaurants = [];
-  List<Restaurant> queriedRestaurant = [];
   final TextEditingController _searchController = TextEditingController();
-
-  @override
-  void initState() {
-    super.initState();
-    _getRestaurants();
-  }
 
   @override
   void dispose() {
     _searchController.dispose();
     super.dispose();
-  }
-
-  _getRestaurants() async {
-    restaurants = await LocalJson.getData();
-    queriedRestaurant = restaurants;
-    setState(() {});
   }
 
   @override
@@ -105,79 +93,67 @@ class _HomePageState extends State<HomePage> {
           minHeight: 24,
         ),
       ),
-      onChanged: (value) {
-        if (value == '') {
-          setState(() {
-            queriedRestaurant = restaurants;
-          });
-        } else {
-          setState(() {
-            queriedRestaurant = restaurants
-                .where((restaurant) => restaurant.name!
-                    .toLowerCase()
-                    .contains(value.toLowerCase()))
-                .toList();
-          });
-        }
+      onChanged: (query) {
+        Provider.of<RestaurantListProvider>(context, listen: false)
+            .fetchRestaurantSearch(query);
       },
     );
   }
 
   Widget _buildList(BuildContext context) {
-    if (restaurants.isEmpty) {
-      return Center(
-        child: Column(
-          children: [
-            const SizedBox(height: 40),
-            const Icon(
-              Icons.restaurant_menu_rounded,
-              size: 40,
-              color: primaryColor,
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'Restauran tidak dapat dimuat',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: secondaryText,
-                  ),
-            ),
-          ],
-        ),
-      );
-    }
+    return Consumer<RestaurantListProvider>(
+      builder: (context, state, _) {
+        if (state.state == ResultState.loading) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (state.state == ResultState.hasData) {
+          List<Restaurant> restaurants;
+          if (state.searchQuery == '') {
+            restaurants = state.result.restaurants!;
+          } else {
+            restaurants = state.searchResult.restaurants!;
+          }
 
-    if (queriedRestaurant.isEmpty) {
-      return Center(
-        child: Column(
-          children: [
-            const SizedBox(height: 40),
-            const Icon(
-              Icons.restaurant_menu_rounded,
-              size: 40,
-              color: primaryColor,
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'Restauran tidak ditemukan',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: secondaryText,
-                  ),
-            ),
-          ],
-        ),
-      );
-    }
+          return GridView.count(
+            crossAxisCount: 2,
+            childAspectRatio: .85,
+            shrinkWrap: true,
+            mainAxisSpacing: 24,
+            crossAxisSpacing: 24,
+            physics: const NeverScrollableScrollPhysics(),
+            children: restaurants.map((Restaurant restaurant) {
+              return _buildRestaurantItem(context, restaurant);
+            }).toList(),
+          );
+        } else if (state.state == ResultState.noData) {
+          return _buildMessage(state.message);
+        } else if (state.state == ResultState.error) {
+          return _buildMessage(state.message);
+        } else {
+          return _buildMessage('Terjadi Kesalahan');
+        }
+      },
+    );
+  }
 
-    return GridView.count(
-      crossAxisCount: 2,
-      childAspectRatio: .85,
-      shrinkWrap: true,
-      mainAxisSpacing: 24,
-      crossAxisSpacing: 24,
-      physics: const NeverScrollableScrollPhysics(),
-      children: queriedRestaurant.map((Restaurant restaurant) {
-        return _buildRestaurantItem(context, restaurant);
-      }).toList(),
+  Widget _buildMessage(String message) {
+    return Center(
+      child: Column(
+        children: [
+          const SizedBox(height: 40),
+          const Icon(
+            Icons.restaurant_menu_rounded,
+            size: 40,
+            color: primaryColor,
+          ),
+          const SizedBox(height: 16),
+          Text(
+            message,
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: secondaryText,
+                ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -187,7 +163,7 @@ class _HomePageState extends State<HomePage> {
         Navigator.pushNamed(
           context,
           RestaurantDetailPage.routeName,
-          arguments: restaurant,
+          arguments: restaurant.id,
         );
       },
       child: Container(
@@ -214,7 +190,7 @@ class _HomePageState extends State<HomePage> {
                   topRight: Radius.circular(15),
                 ),
                 child: Image.network(
-                  restaurant.pictureId!,
+                  'https://restaurant-api.dicoding.dev/images/small/${restaurant.pictureId}',
                   height: 100,
                   width: double.infinity,
                   fit: BoxFit.cover,
