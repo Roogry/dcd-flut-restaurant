@@ -16,14 +16,13 @@
 
 ## Introduction
 
-Restoeev is a Restaurant Application for the people who lookin recommendation for the Restaurant, Foods, Drinks, anything about that.
+Restoeev is a Restaurant Application designed to provide restaurant recommendations, information about foods, drinks, and everything related to dining experiences.
 
-In this project, is to accomplish Submission Dicoding in [Flutter Fundamental Course](https://www.dicoding.com/academies/195), I created this restaurant app with Provider State Management. To see what features I made, you can see [here](#features).
+The purpose of this project is to fulfill the requirements of the [Flutter Fundamental Course](https://www.dicoding.com/academies/195) offered by Dicoding. Utilizing the Provider State Management, I have developed this restaurant app. To explore the specific features I have implemented, please refer to the Features section.
 
-For this submission 1, focus on creating UI and consume data from json. There is list of restaurants, search restaurants, and detail restaurant.
-For this submission 2, moving forward to REST API using [http](https://pub.dev/packages/http) .
-For this submission 3, focus on build bookmark feature, using Sqflite, and implement notification with alarm manager.
-
+In Submission 1, the main focus was on creating a user interface and fetching data from JSON. The features included a restaurant list, restaurant search, and restaurant details.
+Submission 2 involved integrating a REST API using the [http package](https://pub.dev/packages/http).
+Submission 3 centered around implementing the bookmark feature using Sqflite and integrating notifications with the alarm manager.
 
 ## Demo
 
