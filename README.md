@@ -27,7 +27,7 @@ Submission 3 centered around implementing the bookmark feature using Sqflite and
 ## Demo
 
 |Home Screen|Detail Restaurant|Search Restaurant|
-|--|--|--|--|
+|--|--|--|
 |![](demo/home.png)|![](demo/detail.png)|![](demo/search.png)|
 
 |Add Review|Bookmark|Setting|
