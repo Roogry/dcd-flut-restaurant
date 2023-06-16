@@ -1,8 +1,13 @@
-import 'package:dcd_flut_restaurant/common/state_enum.dart';
+import 'package:dcd_flut_restaurant/common/navigation.dart';
+import 'package:dcd_flut_restaurant/ui/bookmarks_page.dart';
+import 'package:dcd_flut_restaurant/ui/settings_page.dart';
+import 'package:dcd_flut_restaurant/utils/notification_helper.dart';
+import 'package:dcd_flut_restaurant/utils/state_enum.dart';
 import 'package:dcd_flut_restaurant/common/styles.dart';
 import 'package:dcd_flut_restaurant/data/model/restaurant.dart';
 import 'package:dcd_flut_restaurant/provider/restaurant_list_provider.dart';
 import 'package:dcd_flut_restaurant/ui/restaurant_detail_page.dart';
+import 'package:dcd_flut_restaurant/widgets/restaurant_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -19,10 +24,19 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final TextEditingController _searchController = TextEditingController();
+  final NotificationHelper _notificationHelper = NotificationHelper();
+
+  @override
+  void initState() {
+    super.initState();
+    _notificationHelper.configureSelectNotificationSubject(
+        RestaurantDetailPage.routeName);
+  }
 
   @override
   void dispose() {
     _searchController.dispose();
+    selectNotificationSubject.close();
     super.dispose();
   }
 
@@ -31,48 +45,25 @@ class _HomePageState extends State<HomePage> {
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
-          body: SafeArea(
-        child: RefreshIndicator(
-          onRefresh: () {
-            return Provider.of<RestaurantListProvider>(context, listen: false)
-                .fetchAllRestaurant();
-          },
-          child: ListView(
-            padding: const EdgeInsets.fromLTRB(24, 24, 24, 32),
-            children: [
-              RichText(
-                text: TextSpan(
-                  text: 'Halo, ',
-                  style: GoogleFonts.inter(
-                    fontSize: 20,
-                    color: blackText,
-                  ),
-                  children: [
-                    TextSpan(
-                      text: 'Sobatku',
-                      style: GoogleFonts.inter(
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'Rekomendasi restoran untuk kamu',
-                style: GoogleFonts.inter(
-                  fontSize: 14,
-                  color: secondaryText,
-                ),
-              ),
-              const SizedBox(height: 16),
-              _searchField(),
-              const SizedBox(height: 24),
-              _buildList(context)
-            ],
+        body: SafeArea(
+          child: RefreshIndicator(
+            onRefresh: () {
+              return Provider.of<RestaurantListProvider>(context, listen: false)
+                  .fetchAllRestaurant();
+            },
+            child: ListView(
+              padding: const EdgeInsets.fromLTRB(24, 24, 24, 32),
+              children: [
+                _topSection(),
+                const SizedBox(height: 16),
+                _searchField(),
+                const SizedBox(height: 24),
+                _buildList(context)
+              ],
+            ),
           ),
         ),
-      )),
+      ),
     );
   }
 
@@ -121,13 +112,16 @@ class _HomePageState extends State<HomePage> {
 
           return GridView.count(
             crossAxisCount: 2,
-            childAspectRatio: .85,
+            childAspectRatio: .75,
             shrinkWrap: true,
             mainAxisSpacing: 24,
             crossAxisSpacing: 24,
             physics: const NeverScrollableScrollPhysics(),
             children: restaurants.map((Restaurant restaurant) {
-              return _buildRestaurantItem(context, restaurant);
+              return RestaurantCard(
+                context: context,
+                restaurant: restaurant,
+              );
             }).toList(),
           );
         } else if (state.state == ResultState.noData) {
@@ -163,83 +157,56 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _buildRestaurantItem(BuildContext context, Restaurant restaurant) {
-    return GestureDetector(
-      onTap: () {
-        Navigator.pushNamed(
-          context,
-          RestaurantDetailPage.routeName,
-          arguments: restaurant.id,
-        );
-      },
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(15),
-          color: Colors.white,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.2),
-              spreadRadius: 1,
-              blurRadius: 15,
-              offset: const Offset(0, 1),
-            ),
-          ],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+  Widget _topSection() {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: [
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Hero(
-              tag: restaurant.pictureId!,
-              child: ClipRRect(
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(15),
-                  topRight: Radius.circular(15),
+            RichText(
+              text: TextSpan(
+                text: 'Halo, ',
+                style: GoogleFonts.inter(
+                  fontSize: 20,
+                  color: blackText,
                 ),
-                child: Image.network(
-                  'https://restaurant-api.dicoding.dev/images/small/${restaurant.pictureId}',
-                  height: 100,
-                  width: double.infinity,
-                  fit: BoxFit.cover,
-                ),
-              ),
-            ),
-            const SizedBox(height: 12),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8),
-                child: Text(
-                  restaurant.name ?? '-',
-                  maxLines: 2,
-                  style: Theme.of(context).textTheme.titleLarge,
-                ),
-              ),
-            ),
-            const SizedBox(height: 8),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8),
-              child: Row(
                 children: [
-                  SvgPicture.asset(
-                    'assets/icons/pin_fill.svg',
-                    height: 10,
-                    width: 10,
-                  ),
-                  const SizedBox(width: 4),
-                  Expanded(
-                    child: Text(
-                      restaurant.name ?? '-',
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: secondaryText,
-                          ),
+                  TextSpan(
+                    text: 'Sobatku',
+                    style: GoogleFonts.inter(
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                 ],
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 8),
+            Text(
+              'Rekomendasi restoran untuk kamu',
+              style: GoogleFonts.inter(
+                fontSize: 14,
+                color: secondaryText,
+              ),
+            ),
           ],
         ),
-      ),
+        const Spacer(),
+        IconButton(
+          onPressed: () {
+            Navigation.intentWithData(BookmarksPage.routeName, null);
+          },
+          icon: const Icon(Icons.bookmarks_rounded),
+          color: blackText,
+        ),
+        IconButton(
+          onPressed: () {
+            Navigation.intentWithData(SettingsPage.routeName, null);
+          },
+          icon: const Icon(Icons.settings),
+          color: blackText,
+        ),
+      ],
     );
   }
 }

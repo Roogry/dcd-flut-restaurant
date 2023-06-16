@@ -1,4 +1,5 @@
-import 'package:dcd_flut_restaurant/common/state_enum.dart';
+import 'package:dcd_flut_restaurant/common/navigation.dart';
+import 'package:dcd_flut_restaurant/utils/state_enum.dart';
 import 'package:dcd_flut_restaurant/common/styles.dart';
 import 'package:dcd_flut_restaurant/data/model/restaurant.dart';
 import 'package:dcd_flut_restaurant/provider/restaurant_detail_provider.dart';
@@ -28,7 +29,7 @@ class WriteReviewPage extends StatelessWidget {
         leading: Padding(
           padding: const EdgeInsets.only(left: 32),
           child: IconButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () => Navigation.back(),
             icon: Icon(
               Icons.adaptive.arrow_back,
               color: blackText,
@@ -176,7 +177,7 @@ class WriteReviewPage extends StatelessWidget {
                         Provider.of<RestaurantDetailProvider>(context,
                                 listen: false)
                             .fetchRestaurantDetail(restaurant.id!);
-                        Navigator.pop(context);
+                        Navigation.back();
                       }
                     });
                   }

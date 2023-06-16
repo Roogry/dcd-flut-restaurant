@@ -175,4 +175,11 @@ class Restaurant {
             ? []
             : List<dynamic>.from(customerReviews!.map((x) => x.toJson())),
       };
+
+  Map<String, dynamic> toJsonDB() => {
+        "id": id,
+        "name": name,
+        "city": city,
+        "pictureId": pictureId,
+      };
 }

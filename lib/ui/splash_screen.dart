@@ -1,3 +1,4 @@
+import 'package:dcd_flut_restaurant/common/navigation.dart';
 import 'package:dcd_flut_restaurant/common/styles.dart';
 import 'package:dcd_flut_restaurant/ui/home_page.dart';
 import 'package:flutter/material.dart';
@@ -18,9 +19,9 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState() {
     super.initState();
     Future.delayed(const Duration(seconds: 1)).then((_) {
-      Navigator.pushReplacementNamed(
-        context,
+      Navigation.intentReplaceWithData(
         HomePage.routeName,
+        null
       );
     });
   }

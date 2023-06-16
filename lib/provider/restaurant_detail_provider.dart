@@ -1,4 +1,4 @@
-import 'package:dcd_flut_restaurant/common/state_enum.dart';
+import 'package:dcd_flut_restaurant/utils/state_enum.dart';
 import 'package:dcd_flut_restaurant/data/api/api_service.dart';
 import 'package:dcd_flut_restaurant/data/model/restaurant.dart';
 import 'package:flutter/foundation.dart';

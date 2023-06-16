@@ -1,6 +1,8 @@
 import 'dart:ui';
 
-import 'package:dcd_flut_restaurant/common/state_enum.dart';
+import 'package:dcd_flut_restaurant/common/navigation.dart';
+import 'package:dcd_flut_restaurant/provider/database_provider.dart';
+import 'package:dcd_flut_restaurant/utils/state_enum.dart';
 import 'package:dcd_flut_restaurant/common/styles.dart';
 import 'package:dcd_flut_restaurant/data/model/restaurant.dart';
 import 'package:dcd_flut_restaurant/data/model/review.dart';
@@ -29,7 +31,7 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
     WidgetsBinding.instance.addPostFrameCallback(
       (_) async {
         Provider.of<RestaurantDetailProvider>(context, listen: false)
-              .fetchRestaurantDetail(widget.id);
+            .fetchRestaurantDetail(widget.id);
       },
     );
     super.initState();
@@ -70,7 +72,8 @@ class _DetailContentState extends State<DetailContent> {
   @override
   Widget build(BuildContext context) {
     return RefreshIndicator(
-      onRefresh: () => Provider.of<RestaurantDetailProvider>(context, listen: false)
+      onRefresh: () =>
+          Provider.of<RestaurantDetailProvider>(context, listen: false)
               .fetchRestaurantDetail(widget.restaurant.id!),
       child: CustomScrollView(
         slivers: [
@@ -110,9 +113,10 @@ class _DetailContentState extends State<DetailContent> {
                       Expanded(
                         child: Text(
                           widget.restaurant.name ?? '-',
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                color: secondaryText,
-                              ),
+                          style:
+                              Theme.of(context).textTheme.bodySmall?.copyWith(
+                                    color: secondaryText,
+                                  ),
                         ),
                       ),
                     ],
@@ -122,7 +126,8 @@ class _DetailContentState extends State<DetailContent> {
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: InkWell(
-                    onTap: () => setState(() => isExpandedDesc = !isExpandedDesc),
+                    onTap: () =>
+                        setState(() => isExpandedDesc = !isExpandedDesc),
                     child: Text(
                       widget.restaurant.description ?? '-',
                       style: Theme.of(context).textTheme.bodyMedium,
@@ -210,10 +215,9 @@ class _DetailContentState extends State<DetailContent> {
                   width: double.infinity,
                   child: OutlinedButton(
                     onPressed: () {
-                      Navigator.pushNamed(
-                        context,
+                      Navigation.intentWithData(
                         WriteReviewPage.routeName,
-                        arguments: widget.restaurant,
+                        widget.restaurant,
                       );
                     },
                     style: OutlinedButton.styleFrom(
@@ -313,7 +317,7 @@ class _DetailContentState extends State<DetailContent> {
         padding: const EdgeInsets.only(left: 16),
         child: Center(
           child: GestureDetector(
-            onTap: () => Navigator.pop(context),
+            onTap: () => Navigation.back(),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(15),
               child: BackdropFilter(
@@ -338,6 +342,12 @@ class _DetailContentState extends State<DetailContent> {
           ),
         ),
       ),
+      actions: [
+        Padding(
+          padding: const EdgeInsets.only(right: 32),
+          child: _bookmarkIcon(context),
+        ),
+      ],
       flexibleSpace: FlexibleSpaceBar(
         background: Hero(
           tag: widget.restaurant.pictureId!,
@@ -355,6 +365,57 @@ class _DetailContentState extends State<DetailContent> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _bookmarkIcon(BuildContext context) {
+    return Consumer<DatabaseProvider>(
+      builder: (context, provider, _) {
+        return FutureBuilder<bool>(
+          future: provider.isBookmarked(widget.restaurant.id!),
+          builder: (context, snapshot) {
+            var isBookmarked = snapshot.data ?? false;
+            return GestureDetector(
+              onTap: () {
+                if (isBookmarked) {
+                  provider.removeBookmark(widget.restaurant.id!);
+                } else {
+                  provider.addBookmark(widget.restaurant);
+                }
+              },
+              child: Center(
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(15),
+                  child: BackdropFilter(
+                    filter: ImageFilter.blur(
+                      sigmaX: 10,
+                      sigmaY: 10,
+                    ),
+                    child: Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.4),
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                      child: isBookmarked
+                          ? const Icon(
+                              Icons.bookmark_rounded,
+                              color: blackText,
+                              size: 24,
+                            )
+                          : const Icon(
+                              Icons.bookmark_border_rounded,
+                              color: blackText,
+                              size: 24,
+                            ),
+                    ),
+                  ),
+                ),
+              ),
+            );
+          },
+        );
+      },
     );
   }
 

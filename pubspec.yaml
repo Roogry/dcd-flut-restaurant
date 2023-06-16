@@ -9,19 +9,26 @@ environment:
   sdk: ">=3.0.3 <4.0.0"
 
 dependencies:
+  android_alarm_manager_plus: ^3.0.1
   flutter:
     sdk: flutter
   flutter_launcher_icons: ^0.13.1
+  flutter_local_notifications: ^14.1.1
   flutter_svg: ^2.0.6
   google_fonts: ^5.0.0
   http: ^1.0.0
   internet_connection_checker: ^1.0.0+1
+  intl: ^0.18.1
   provider: ^6.0.5
+  rxdart: ^0.27.7
+  shared_preferences: ^2.1.2
+  sqflite: ^2.2.8+4
 
 dev_dependencies:
   flutter_lints: ^2.0.0
   flutter_test:
     sdk: flutter
+  test: any
 
 flutter_icons:
   android: "launcher_icon"
