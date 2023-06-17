@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:dcd_flut_restaurant/common/navigation.dart';
 import 'package:dcd_flut_restaurant/data/model/restaurant.dart';
@@ -65,7 +66,10 @@ class NotificationHelper {
     );
 
     var titleNotification = "<b>Recommended Restaurant</b>";
-    var restaurantName = response.restaurants![0].name;
+    
+    final random = Random();
+    var restaurantName = response
+        .restaurants![random.nextInt(response.restaurants?.length ?? 0)].name;
 
     await flutterLocalNotificationsPlugin.show(
       0,
