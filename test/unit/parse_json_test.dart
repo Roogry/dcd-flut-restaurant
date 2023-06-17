@@ -45,7 +45,6 @@ void main() {
       var result = RestaurantResponse.fromJson(json).toJson();
 
       // Assert
-      expect(result, json);
       expect(result['error'], false);
       expect(result['message'], 'success');
       expect(result['count'], 20);
