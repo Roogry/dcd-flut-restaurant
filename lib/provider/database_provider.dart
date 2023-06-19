@@ -22,7 +22,7 @@ class DatabaseProvider extends ChangeNotifier {
 
   Future<void> fetchBookmarks() async {
     _bookmarks = await databaseHelper.getRestaurants();
-    if (_bookmarks.length > 0) {
+    if (_bookmarks.isNotEmpty) {
       _state = ResultState.hasData;
     } else {
       _state = ResultState.noData;

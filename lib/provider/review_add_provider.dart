@@ -4,10 +4,10 @@ import 'package:dcd_flut_restaurant/data/model/review.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-class ReviewAddProvicer extends ChangeNotifier {
+class ReviewAddProvider extends ChangeNotifier {
   final ApiService apiService;
  
-  ReviewAddProvicer({required this.apiService});
+  ReviewAddProvider({required this.apiService});
 
   late ReviewResponse _result;
   ReviewResponse get result => _result;

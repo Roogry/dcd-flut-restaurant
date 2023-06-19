@@ -7,6 +7,7 @@ import 'package:dcd_flut_restaurant/common/styles.dart';
 import 'package:dcd_flut_restaurant/data/model/restaurant.dart';
 import 'package:dcd_flut_restaurant/provider/restaurant_list_provider.dart';
 import 'package:dcd_flut_restaurant/ui/restaurant_detail_page.dart';
+import 'package:dcd_flut_restaurant/widgets/custom_placeholder.dart';
 import 'package:dcd_flut_restaurant/widgets/restaurant_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -99,15 +100,15 @@ class _HomePageState extends State<HomePage> {
 
   Widget _buildList(BuildContext context) {
     return Consumer<RestaurantListProvider>(
-      builder: (context, state, _) {
-        if (state.state == ResultState.loading) {
+      builder: (context, provider, _) {
+        if (provider.state == ResultState.loading) {
           return const Center(child: CircularProgressIndicator());
-        } else if (state.state == ResultState.hasData) {
+        } else if (provider.state == ResultState.hasData) {
           List<Restaurant> restaurants;
-          if (state.searchQuery == '') {
-            restaurants = state.result.restaurants!;
+          if (provider.searchQuery == '') {
+            restaurants = provider.result.restaurants!;
           } else {
-            restaurants = state.searchResult.restaurants!;
+            restaurants = provider.searchResult.restaurants!;
           }
 
           return GridView.count(
@@ -124,36 +125,14 @@ class _HomePageState extends State<HomePage> {
               );
             }).toList(),
           );
-        } else if (state.state == ResultState.noData) {
-          return _buildMessage(state.message);
-        } else if (state.state == ResultState.error) {
-          return _buildMessage(state.message);
+        } else if (provider.state == ResultState.noData) {
+          return CustomPlaceholder(message: provider.message);
+        } else if (provider.state == ResultState.error) {
+          return CustomPlaceholder(message: provider.message);
         } else {
-          return _buildMessage('Terjadi Kesalahan');
+          return CustomPlaceholder(message: 'Terjadi Kesalahan');
         }
       },
-    );
-  }
-
-  Widget _buildMessage(String message) {
-    return Center(
-      child: Column(
-        children: [
-          const SizedBox(height: 40),
-          const Icon(
-            Icons.restaurant_menu_rounded,
-            size: 40,
-            color: primaryColor,
-          ),
-          const SizedBox(height: 16),
-          Text(
-            message,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: secondaryText,
-                ),
-          ),
-        ],
-      ),
     );
   }
 

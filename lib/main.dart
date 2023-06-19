@@ -32,13 +32,13 @@ final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  final NotificationHelper _notificationHelper = NotificationHelper();
-  final BackgroundService _service = BackgroundService();
-  _service.initializeIsolate();
+  final NotificationHelper notificationHelper = NotificationHelper();
+  final BackgroundService service = BackgroundService();
+  service.initializeIsolate();
   if (Platform.isAndroid) {
     await AndroidAlarmManager.initialize();
   }
-  await _notificationHelper.initNotifications(flutterLocalNotificationsPlugin);
+  await notificationHelper.initNotifications(flutterLocalNotificationsPlugin);
 
   runApp(const MainApp());
 }
@@ -57,7 +57,7 @@ class MainApp extends StatelessWidget {
           create: (_) => RestaurantDetailProvider(apiService: ApiService()),
         ),
         ChangeNotifierProvider(
-          create: (_) => ReviewAddProvicer(apiService: ApiService()),
+          create: (_) => ReviewAddProvider(apiService: ApiService()),
         ),
         ChangeNotifierProvider(create: (_) => SchedulingProvider()),
         ChangeNotifierProvider(

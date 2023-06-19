@@ -9,15 +9,28 @@ import 'package:flutter_svg/svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
-class WriteReviewPage extends StatelessWidget {
+class WriteReviewPage extends StatefulWidget {
   static const routeName = '/write_review';
 
   WriteReviewPage({super.key, required this.restaurant});
 
   Restaurant restaurant;
+
+  @override
+  State<WriteReviewPage> createState() => _WriteReviewPageState();
+}
+
+class _WriteReviewPageState extends State<WriteReviewPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _reviewController = TextEditingController();
+
+  @override
+  dispose() {
+    _nameController.dispose();
+    _reviewController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -49,11 +62,11 @@ class WriteReviewPage extends StatelessWidget {
             children: [
               const SizedBox(height: 40),
               Hero(
-                tag: restaurant.pictureId!,
+                tag: widget.restaurant.pictureId!,
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(150),
                   child: Image.network(
-                    'https://restaurant-api.dicoding.dev/images/small/${restaurant.pictureId}',
+                    'https://restaurant-api.dicoding.dev/images/small/${widget.restaurant.pictureId}',
                     height: 150,
                     width: 150,
                     fit: BoxFit.cover,
@@ -64,7 +77,7 @@ class WriteReviewPage extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8),
                 child: Text(
-                  restaurant.name ?? '-',
+                  widget.restaurant.name ?? '-',
                   maxLines: 2,
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
@@ -82,7 +95,7 @@ class WriteReviewPage extends StatelessWidget {
                     ),
                     const SizedBox(width: 4),
                     Text(
-                      restaurant.city ?? '-',
+                      widget.restaurant.city ?? '-',
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
                             color: secondaryText,
                           ),
@@ -143,25 +156,25 @@ class WriteReviewPage extends StatelessWidget {
   }
 
   Widget _buttonSubmit(BuildContext context) {
-    return Consumer<ReviewAddProvicer>(
-      builder: (context, state, _) {
+    return Consumer<ReviewAddProvider>(
+      builder: (context, provider, _) {
         return ElevatedButton(
-          onPressed: state.state == ResultState.loading
+          onPressed: provider.state == ResultState.loading
               ? null
               : () {
                   if (_formKey.currentState!.validate()) {
                     var data = {
-                      'id': restaurant.id,
+                      'id': widget.restaurant.id,
                       'name': _nameController.text,
                       'review': _reviewController.text,
                     };
 
-                    state.submitReview(data).then((_) {
-                      if (state.state == ResultState.error) {
-                        debugPrint(state.message);
+                    provider.submitReview(data).then((_) {
+                      if (provider.state == ResultState.error) {
+                        debugPrint(provider.message);
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                            content: Text(state.message),
+                            content: Text(provider.message),
                           ),
                         );
                       } else {
@@ -176,7 +189,7 @@ class WriteReviewPage extends StatelessWidget {
 
                         Provider.of<RestaurantDetailProvider>(context,
                                 listen: false)
-                            .fetchRestaurantDetail(restaurant.id!);
+                            .fetchRestaurantDetail(widget.restaurant.id!);
                         Navigation.back();
                       }
                     });
@@ -189,7 +202,7 @@ class WriteReviewPage extends StatelessWidget {
               borderRadius: BorderRadius.circular(10),
             ),
           ),
-          child: state.state == ResultState.loading
+          child: provider.state == ResultState.loading
               ? const SizedBox(
                   height: 24,
                   width: 24,

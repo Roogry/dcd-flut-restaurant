@@ -37,26 +37,23 @@ class SettingsPage extends StatelessWidget {
             bottom: 32,
           ),
           children: [
-            ListTile(
-              contentPadding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
-              title: const Text('Notifikasi Restaurant'),
-              subtitle: const Text('Aktifkan notifikasi tiap jam 11 siang'),
-              textColor: blackText,
-              trailing: Consumer<SchedulingProvider>(
-                builder: (context, scheduled, _) {
-                  return Switch.adaptive(
-                    value: provider.isDailyRecommendationsActive,
-                    onChanged: (value) async {
-                      if (Platform.isIOS) {
-                        customDialog(context);
-                      } else {
-                        scheduled.scheduledNews(value);
-                        provider.enableDailyRecommendations(value);
-                      }
-                    },
-                  );
-                },
-              ),
+            Consumer<SchedulingProvider>(
+              builder: (context, scheduled, _) {
+                return SwitchListTile.adaptive(
+                  contentPadding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
+                  title: const Text('Notifikasi Restaurant'),
+                  subtitle: const Text('Aktifkan notifikasi tiap jam 11 siang'),
+                  value: provider.isDailyRecommendationsActive,
+                  onChanged: (value) {
+                    if (Platform.isIOS) {
+                      customDialog(context);
+                    } else {
+                      scheduled.scheduledNews(value);
+                      provider.enableDailyRecommendations(value);
+                    }
+                  },
+                );
+              },
             ),
           ],
         );

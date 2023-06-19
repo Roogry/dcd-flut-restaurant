@@ -10,9 +10,7 @@ class ApiService {
 
   Future<RestaurantResponse> getRestaurants() async {
     bool isConnected = await InternetConnectionChecker().hasConnection;
-    if(!isConnected) {
-      throw Exception('No internet connection');
-    }
+    if(!isConnected) throw Exception('No internet connection');
 
     final response = await http.get(Uri.parse('$_baseUrl/list'));
     if (response.statusCode == 200) {
@@ -24,9 +22,7 @@ class ApiService {
 
   Future<RestaurantDetailResponse> getRestaurantDetail(String id) async {
     bool isConnected = await InternetConnectionChecker().hasConnection;
-    if(!isConnected) {
-      throw Exception('No internet connection');
-    }
+    if(!isConnected) throw Exception('No internet connection');
 
     final response = await http.get(Uri.parse('$_baseUrl/detail/$id'));
 
@@ -39,10 +35,8 @@ class ApiService {
 
   Future<RestaurantSearchResponse> searchRestaurants(String query) async {
     bool isConnected = await InternetConnectionChecker().hasConnection;
-    if(!isConnected) {
-      throw Exception('No internet connection');
-    }
-    
+    if(!isConnected) throw Exception('No internet connection');
+
     final response = await http.get(Uri.parse('$_baseUrl/search?q=$query'));
 
     if (response.statusCode == 200) {
@@ -54,9 +48,7 @@ class ApiService {
 
   Future<ReviewResponse> submitReview(Map<String, dynamic> data) async {
     bool isConnected = await InternetConnectionChecker().hasConnection;
-    if(!isConnected) {
-      throw Exception('No internet connection');
-    }
+    if(!isConnected) throw Exception('No internet connection');
     
     final response = await http.post(
       Uri.parse('$_baseUrl/review'),

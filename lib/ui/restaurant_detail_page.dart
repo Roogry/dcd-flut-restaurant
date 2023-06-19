@@ -41,15 +41,15 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Consumer<RestaurantDetailProvider>(
-        builder: (context, state, _) {
-          if (state.state == ResultState.loading) {
+        builder: (context, provider, _) {
+          if (provider.state == ResultState.loading) {
             return const Center(child: CircularProgressIndicator());
-          } else if (state.state == ResultState.hasData) {
+          } else if (provider.state == ResultState.hasData) {
             return DetailContent(
-              restaurant: state.result.restaurant!,
+              restaurant: provider.result.restaurant!,
             );
           } else {
-            return Text(state.message);
+            return Text(provider.message);
           }
         },
       ),
@@ -373,7 +373,7 @@ class _DetailContentState extends State<DetailContent> {
       builder: (context, provider, _) {
         return FutureBuilder<bool>(
           future: provider.isBookmarked(widget.restaurant.id!),
-          builder: (context, snapshot) {
+          builder: (_, snapshot) {
             var isBookmarked = snapshot.data ?? false;
             return GestureDetector(
               onTap: () {

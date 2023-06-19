@@ -30,7 +30,7 @@ class RestaurantListProvider extends ChangeNotifier {
       _state = ResultState.loading;
       notifyListeners();
       final response = await apiService.getRestaurants();
-      if (response.restaurants == null || (response.restaurants?.length?? 0) < 1) {
+      if (response.restaurants == null || response.restaurants!.isEmpty) {
         _state = ResultState.noData;
         notifyListeners();
         return _message = 'Belum ada restaurant';

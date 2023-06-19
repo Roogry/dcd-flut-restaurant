@@ -2,6 +2,7 @@ import 'package:dcd_flut_restaurant/common/styles.dart';
 import 'package:dcd_flut_restaurant/data/model/restaurant.dart';
 import 'package:dcd_flut_restaurant/provider/database_provider.dart';
 import 'package:dcd_flut_restaurant/utils/state_enum.dart';
+import 'package:dcd_flut_restaurant/widgets/custom_placeholder.dart';
 import 'package:dcd_flut_restaurant/widgets/restaurant_card.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -40,11 +41,11 @@ class BookmarksPage extends StatelessWidget {
 
   Widget _buildList() {
     return Consumer<DatabaseProvider>(
-      builder: (context, state, child) {
-        if (state.state == ResultState.loading) {
+      builder: (context, provider, child) {
+        if (provider.state == ResultState.loading) {
           return const Center(child: CircularProgressIndicator());
-        } else if (state.state == ResultState.hasData) {
-          List<Restaurant> restaurants = state.bookmarks;
+        } else if (provider.state == ResultState.hasData) {
+          List<Restaurant> restaurants = provider.bookmarks;
 
           return GridView.count(
             crossAxisCount: 2,
@@ -60,36 +61,14 @@ class BookmarksPage extends StatelessWidget {
               );
             }).toList(),
           );
-        } else if (state.state == ResultState.noData) {
-          return _buildMessage(context, state.message);
-        } else if (state.state == ResultState.error) {
-          return _buildMessage(context, state.message);
+        } else if (provider.state == ResultState.noData) {
+          return CustomPlaceholder(message: provider.message);
+        } else if (provider.state == ResultState.error) {
+          return CustomPlaceholder(message: provider.message);
         } else {
-          return _buildMessage(context, 'Terjadi Kesalahan');
+          return CustomPlaceholder(message: 'Terjadi Kesalahan');
         }
       },
-    );
-  }
-
-  Widget _buildMessage(BuildContext context, String message) {
-    return Center(
-      child: Column(
-        children: [
-          const SizedBox(height: 40),
-          const Icon(
-            Icons.restaurant_menu_rounded,
-            size: 40,
-            color: primaryColor,
-          ),
-          const SizedBox(height: 16),
-          Text(
-            message,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: secondaryText,
-                ),
-          ),
-        ],
-      ),
     );
   }
 }
